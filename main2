@@ -1,0 +1,44 @@
+import openai
+import psycopg2
+
+def connect_to_database():
+    connection = psycopg2.connect(
+        host="localhost",
+        database="database_name",
+        user="user_name",
+        password="password"
+    )
+    return connection
+
+def generate_article(prompt, model, temperature=0.5):
+    completions = openai.Completion.create(
+        engine=model,
+        prompt=prompt,
+        temperature=temperature,
+        max_tokens=1024,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    message = completions.choices[0].text
+    return message
+
+def write_article_to_database(title, content):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    query = "INSERT INTO articles (title, content) VALUES (%s, %s)"
+    cursor.execute(query, (title, content))
+    connection.commit()
+
+def main():
+    keywords = "keywords"
+    prompt = f"Write an article about {keywords}"
+    model = "text-davinci-002"
+    temperature = 0.5
+    title = "Article about keywords"
+
+    content = generate_article(prompt, model, temperature)
+    write_article_to_database(title, content)
+
+if __name__ == "__main__":
+    main()
