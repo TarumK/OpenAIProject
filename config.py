@@ -1,2 +1,2 @@
-api_key = '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'
+api_key = '3BlbkFJdGwsDnZzULD5M7'
 
